@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
@@ -8,6 +8,7 @@ import { io } from 'socket.io-client';
 import useAuth from '../hooks/index.jsx';
 import { actions as channelsActions, selectors as channelsSelectors } from '../slices/channelsSlice.js';
 import { actions as messagesActions, selectors as messagesSelectors } from '../slices/messagesSlice.js';
+import getModal from './modals/index.js';
 
 const getAuthHeader = () => {
   const userId = JSON.parse(localStorage.getItem('userId'));
@@ -19,14 +20,35 @@ const getAuthHeader = () => {
   return {};
 };
 
+const renderModal = ({ modalInfo, hideModal, changeIdOpenedMenu }) => {
+  if (!modalInfo.type) {
+    return null;
+  }
+
+  const Component = getModal(modalInfo.type);
+  return (
+    <Component
+      onHide={hideModal}
+      modalInfo={modalInfo}
+      changeIdOpenedMenu={changeIdOpenedMenu}
+    />
+  );
+};
+
 function ChatPage() {
+  const [idOpenedMenu, changeIdOpenedMenu] = useState();
   const socket = io();
   const channels = useSelector(channelsSelectors.selectAll);
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
   const dispatch = useDispatch();
-  const messages = useSelector(messagesSelectors.selectAll);
+  const allMessages = useSelector(messagesSelectors.selectAll);
+  const messages = allMessages.filter((message) => message.channelId === currentChannelId);
   const auth = useAuth();
   const navigate = useNavigate();
+
+  const [modalInfo, setModalInfo] = useState({ type: null, id: null });
+  const hideModal = () => setModalInfo({ type: null, id: null });
+  const showModal = (type, id = null) => setModalInfo({ type, id });
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -74,6 +96,11 @@ function ChatPage() {
     console.log(reason);
   });
 
+  const selectChannel = (channelId) => () => {
+    changeIdOpenedMenu();
+    dispatch(channelsActions.setCurrentChannelId(channelId));
+  };
+
   return auth.loggedIn && (
   <div className="container h-100 my-4 overflow-hidden rounded shadow">
     <div className="row h-100 bg-white flex-md-row">
@@ -81,17 +108,38 @@ function ChatPage() {
       <div className="col-4 col-md-2 border-end pt-5 px-0 bg-light">
         <div className="d-flex justify-content-between mb-2 ps-4 pe-2">
           <span>Каналы</span>
-          <Button type="button" className="p-0 text-primary btn btn-group-vertical">
+          <Button onClick={() => showModal('adding')} type="button" className="p-0 text-primary btn btn-group-vertical">
             <span className="visually-hidden">+</span>
           </Button>
         </div>
         <ul className="nav flex-column nav-pills nav-fill px-2">
           {channels && channels.map((channel) => (
             <li key={channel.id} className="nav-item w-100">
-              <Button variant={channel.id === currentChannelId ? 'info' : 'light'} type="button" className="w-100 rounded-0 text-start btn">
-                <span className="me-1">#</span>
-                {channel.name}
-              </Button>
+              <div role="group" className="d-flex show dropdown btn-group">
+                <Button onClick={selectChannel(channel.id)} variant={channel.id === currentChannelId ? 'info' : 'light'} type="button" className="w-100 rounded-0 text-start btn">
+                  <span className="me-1">#</span>
+                  {channel.name}
+                </Button>
+                {channel.removable && (
+                  <Button onClick={() => changeIdOpenedMenu(channel.id)} variant={channel.id === currentChannelId ? 'info' : 'light'} type="button" aria-expanded="true" className="flex-grow-0 dropdown-toggle dropdown-toggle-split btn">
+                    <span className="visually-hidden">Управление каналом</span>
+                  </Button>
+                )}
+                {idOpenedMenu === channel.id && (
+
+                <div
+                  x-placement="bottom-start"
+                  className="dropdown-menu show"
+                  data-popper-reference-hidden="false"
+                  data-popper-escaped="false"
+                  data-popper-placement="bottom-start"
+                  style={{ position: 'absolute', inset: '0px auto auto 0px', transform: 'translate3d(73px, 40px, 0px)' }}
+                >
+                  <Button onClick={() => showModal('removing', channel.id)} data-rr-ui-dropdown-item className="dropdown-item" role="button" tabIndex="0">Удалить</Button>
+                  <Button onClick={() => showModal('renaming', channel.id)} data-rr-ui-dropdown-item className="dropdown-item" role="button" tabIndex="0">Переименовать</Button>
+                </div>
+                )}
+              </div>
             </li>
           ))}
 
@@ -143,8 +191,8 @@ function ChatPage() {
       </div>
 
     </div>
+    {renderModal({ modalInfo, hideModal, changeIdOpenedMenu })}
   </div>
-
   );
 }
 

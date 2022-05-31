@@ -9,6 +9,9 @@ const channelsSlice = createSlice({
   initialState,
   reducers: {
     addChannels: channelsAdapter.addMany,
+    addOneChannel: channelsAdapter.addOne,
+    removeChannel: channelsAdapter.removeOne,
+    renameChannel: channelsAdapter.updateOne,
     setCurrentChannelId(state, action) {
       // eslint-disable-next-line no-param-reassign
       state.currentChannelId = action.payload;
