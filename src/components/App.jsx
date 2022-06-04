@@ -3,40 +3,69 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  Link,
 } from 'react-router-dom';
-import AuthContext from '../contexts/index.jsx';
+import { io } from 'socket.io-client';
+import { Button, Navbar, Container } from 'react-bootstrap';
+import AppContext from '../contexts/index.jsx';
 import LoginPage from './LoginPage.jsx';
 import NoMatch from './NoMatch.jsx';
-import ChatPage from './ChatPage.jsx';
+import MainPage from './MainPage.jsx';
+import SignupPage from './SignupPage.jsx';
+import useAppContext from '../hooks/index.jsx';
 
-function AuthProvider({ children }) {
+function AppProvider({ children }) {
+  const socket = io();
   const [loggedIn, setLoggedIn] = useState(false);
-
   const logIn = () => setLoggedIn(true);
   const logOut = () => {
     localStorage.removeItem('userId');
     setLoggedIn(false);
   };
-  const context = useMemo(() => ({ loggedIn, logIn, logOut }), [loggedIn]);
+  const context = useMemo(() => ({
+    loggedIn, logIn, logOut, socket,
+  }), [loggedIn]);
   return (
-    <AuthContext.Provider value={context}>
+    <AppContext.Provider value={context}>
       {children}
-    </AuthContext.Provider>
+    </AppContext.Provider>
+  );
+}
+
+function AuthButton() {
+  const context = useAppContext();
+
+  return (
+    context.loggedIn
+      ? <Button onClick={context.logOut} as={Link} to="/login">Выйти</Button>
+      : null
   );
 }
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<ChatPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="*" element={<NoMatch />} />
-        </Routes>
+    <div className="d-flex flex-column h-100">
+      <AppProvider>
+        <Router>
 
-      </Router>
-    </AuthProvider>
+          <Navbar bg="white" expand="lg" className="shadow-sm">
+            <Container>
+              <Navbar.Brand as={Link} to="/">Hexlet Chat</Navbar.Brand>
+              <AuthButton />
+            </Container>
+
+          </Navbar>
+
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="*" element={<NoMatch />} />
+          </Routes>
+
+        </Router>
+      </AppProvider>
+    </div>
   );
 }
 

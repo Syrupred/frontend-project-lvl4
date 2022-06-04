@@ -1,25 +1,27 @@
 import { useFormik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
-import { io } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions as channelsActions, selectors as channelsSelectors } from '../../slices/channelsSlice.js';
 import validateModal from '../../validateModal.js';
+import { actions as modalsActions } from '../../slices/modalsSlice.js';
+import useAppContext from '../../hooks/index.jsx';
 
-function modalAddChannel(props) {
+function modalAddChannel() {
   const [failedValue, setFailedValue] = useState(false);
   const [validationError, setValidationError] = useState('');
-  const socket = io();
   const dispatch = useDispatch();
-  const { onHide } = props;
+  const context = useAppContext();
+  const [disabled, setDisabled] = useState(false);
   const channels = useSelector(channelsSelectors.selectAll);
   const namesChannels = channels.map((channel) => channel.name);
   const formik = useFormik({
     initialValues: { name: '' },
     onSubmit: (values) => {
+      setDisabled(true);
       try {
         validateModal(values.name, namesChannels);
-        socket.emit('newChannel', values, (response) => {
+        context.socket.emit('newChannel', values, (response) => {
           if (response.status === 'ok') {
             console.log('канал добавлен');
           } else {
@@ -27,15 +29,21 @@ function modalAddChannel(props) {
           }
         });
 
-        socket.on('newChannel', (channel) => {
+        context.socket.on('newChannel', (channel) => {
           console.log(channel);
           dispatch(channelsActions.addOneChannel(channel));
           dispatch(channelsActions.setCurrentChannelId(channel.id));
+          dispatch(modalsActions.hideModal());
+          setDisabled(false);
         });
-        onHide();
+
+        context.socket.on('disconnect', (reason) => {
+          console.log('reason', reason);
+        });
       } catch (e) {
         setValidationError(e.message);
         setFailedValue(true);
+        setDisabled(false);
       }
     },
   });
@@ -47,7 +55,7 @@ function modalAddChannel(props) {
 
   return (
     <Modal show centered>
-      <Modal.Header closeButton onClick={onHide}>
+      <Modal.Header closeButton onClick={() => dispatch(modalsActions.hideModal())}>
         <Modal.Title>Добавить канал</Modal.Title>
       </Modal.Header>
       <Form onSubmit={formik.handleSubmit}>
@@ -66,8 +74,8 @@ function modalAddChannel(props) {
             <Form.Control.Feedback type="invalid">{validationError}</Form.Control.Feedback>
           </Modal.Body>
           <Modal.Footer>
-            <Button type="close" onClick={onHide} variant="secondary" className="btn btn-group-vertical">Отменить</Button>
-            <Button type="submit" className="btn btn-group-vertical">Отправить</Button>
+            <Button type="close" onClick={() => dispatch(modalsActions.hideModal())} variant="secondary" className="btn btn-group-vertical">Отменить</Button>
+            <Button type="submit" disabled={disabled} className="btn btn-group-vertical">Отправить</Button>
           </Modal.Footer>
         </Form.Group>
       </Form>

@@ -1,26 +1,29 @@
 import { useFormik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
-import { io } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions as channelsActions, selectors as channelsSelectors } from '../../slices/channelsSlice.js';
 import validateModal from '../../validateModal.js';
+import { actions as modalsActions } from '../../slices/modalsSlice.js';
+import useAppContext from '../../hooks/index.jsx';
 
-function modalRenameChannel(props) {
+function modalRenameChannel() {
   const [failedValue, setFailedValue] = useState(false);
   const [validationError, setValidationError] = useState('');
-  const socket = io();
+  const [disabled, setDisabled] = useState(false);
   const dispatch = useDispatch();
-  const { onHide, modalInfo, changeIdOpenedMenu } = props;
+  const context = useAppContext();
+  const idChannel = useSelector((state) => state.modals.id);
   const channels = useSelector(channelsSelectors.selectAll);
   const namesChannels = channels.map((channel) => channel.name);
-  const { name: nameCurrentChannel } = channels.filter(({ id }) => id === modalInfo.id)[0];
+  const { name: nameCurrentChannel } = channels.filter(({ id }) => id === idChannel)[0];
   const formik = useFormik({
     initialValues: { name: nameCurrentChannel },
     onSubmit: (values) => {
+      setDisabled(true);
       try {
         validateModal(values.name, namesChannels);
-        socket.emit('renameChannel', { id: modalInfo.id, name: values.name }, (response) => {
+        context.socket.emit('renameChannel', { id: idChannel, name: values.name }, (response) => {
           if (response.status === 'ok') {
             console.log('канал переименован');
           } else {
@@ -28,18 +31,22 @@ function modalRenameChannel(props) {
           }
         });
 
-        socket.on('renameChannel', (channel) => {
+        context.socket.on('renameChannel', (channel) => {
           console.log(channel);
+          setDisabled(false);
           dispatch(channelsActions.renameChannel({
             id: channel.id,
             changes: {
               name: channel.name,
             },
           }));
+          dispatch(modalsActions.hideModal());
         });
-        onHide();
-        changeIdOpenedMenu();
+        context.socket.on('disconnect', (reason) => {
+          console.log('reason', reason);
+        });
       } catch (e) {
+        setDisabled(false);
         setValidationError(e.message);
         setFailedValue(true);
       }
@@ -53,7 +60,7 @@ function modalRenameChannel(props) {
 
   return (
     <Modal show centered>
-      <Modal.Header closeButton onClick={onHide}>
+      <Modal.Header closeButton onClick={() => dispatch(modalsActions.hideModal())}>
         <Modal.Title>Переименовать канал</Modal.Title>
       </Modal.Header>
       <Form onSubmit={formik.handleSubmit}>
@@ -72,8 +79,8 @@ function modalRenameChannel(props) {
             <Form.Control.Feedback type="invalid">{validationError}</Form.Control.Feedback>
           </Modal.Body>
           <Modal.Footer>
-            <Button type="close" onClick={onHide} variant="secondary" className="btn btn-group-vertical">Отменить</Button>
-            <Button type="submit" className="btn btn-group-vertical">Отправить</Button>
+            <Button type="close" onClick={() => dispatch(modalsActions.hideModal())} variant="secondary" className="btn btn-group-vertical">Отменить</Button>
+            <Button type="submit" disabled={disabled} className="btn btn-group-vertical">Отправить</Button>
           </Modal.Footer>
         </Form.Group>
       </Form>
