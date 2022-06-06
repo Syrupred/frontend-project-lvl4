@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { actions as channelsActions } from '../../slices/channelsSlice.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
@@ -27,9 +28,9 @@ function modalRemoveChannel() {
       dispatch(channelsActions.removeChannel(channel.id));
       dispatch(channelsActions.setCurrentChannelId(1));
       dispatch(modalsActions.hideModal());
-    });
-    context.socket.on('disconnect', (reason) => {
-      console.log('reason', reason);
+      toast.success(t('channel removed'), {
+        toastId: channel.id,
+      });
     });
   };
 

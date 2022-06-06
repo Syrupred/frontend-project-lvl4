@@ -46,9 +46,6 @@ function Messages() {
         setDisabled(false);
       });
 
-      context.socket.on('disconnect', (reason) => {
-        console.log('reason', reason);
-      });
       // eslint-disable-next-line no-param-reassign
       values.body = '';
     },

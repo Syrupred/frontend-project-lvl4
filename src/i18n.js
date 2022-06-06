@@ -37,6 +37,10 @@ const resources = {
       sure: 'Уверены?',
       'rename channel': 'Переименовать канал',
       duplication: 'Должно быть уникальным',
+      'create channel': 'Канал создан',
+      'connection error': 'Ошибка соединения',
+      'channel removed': 'Канал удален',
+      'channel renamed': 'Канал переименован',
     },
   },
 };

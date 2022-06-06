@@ -38,11 +38,16 @@ function modalAddChannel() {
           dispatch(channelsActions.setCurrentChannelId(channel.id));
           dispatch(modalsActions.hideModal());
           setDisabled(false);
-          toast.success('ecgtiyj');
+          toast.success(t('create channel'), {
+            toastId: channel.id,
+          });
         });
 
         context.socket.on('disconnect', (reason) => {
           console.log('reason', reason);
+          toast.error(t('connection error'), {
+            toastId: values.name,
+          });
         });
       } catch (e) {
         setValidationError(e.message);

@@ -2,6 +2,7 @@ import { useFormik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { actions as channelsActions, selectors as channelsSelectors } from '../../slices/channelsSlice.js';
 import validateModal from '../../validateModal.js';
@@ -43,9 +44,9 @@ function modalRenameChannel() {
             },
           }));
           dispatch(modalsActions.hideModal());
-        });
-        context.socket.on('disconnect', (reason) => {
-          console.log('reason', reason);
+          toast.success(t('channel renamed'), {
+            toastId: channel.id,
+          });
         });
       } catch (e) {
         setDisabled(false);

@@ -2,6 +2,8 @@ import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import useAppContext from '../hooks/index.jsx';
 import { actions as channelsActions, selectors as channelsSelectors } from '../slices/channelsSlice.js';
 import { actions as messagesActions } from '../slices/messagesSlice.js';
@@ -20,6 +22,7 @@ const getAuthHeader = () => {
 };
 
 function MainPage() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const context = useAppContext();
   const navigate = useNavigate();
@@ -37,9 +40,9 @@ function MainPage() {
       } catch (err) {
         if (err.isAxiosError && err.response.status === 401) {
           navigate('/login');
-          return;
+        } else {
+          toast.error(t('connection error'));
         }
-        throw err;
       }
     };
 

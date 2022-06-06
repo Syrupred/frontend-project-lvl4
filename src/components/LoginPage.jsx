@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import useAppContext from '../hooks/index.jsx';
 import img from '../images/login.png';
@@ -37,9 +38,10 @@ function LoginPage() {
           setAuthFailed(true);
           inputRef.current.select();
           setDisabled(false);
-          return;
+        } else {
+          toast.error(t('connection error'));
+          setDisabled(false);
         }
-        throw err;
       }
     },
   });

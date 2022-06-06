@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -50,9 +51,10 @@ function SignupPage() {
         if (err.isAxiosError && err.response.status === 409) {
           setDisabled(false);
           setAvailabilityLogin(true);
-          return;
+        } else {
+          toast.error(t('connection error'));
+          setDisabled(false);
         }
-        throw err;
       }
     },
   });
