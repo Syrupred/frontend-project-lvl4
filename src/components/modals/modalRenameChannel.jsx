@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { actions as channelsActions, selectors as channelsSelectors } from '../../slices/channelsSlice.js';
 import validateModal from '../../validateModal.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
-import useAppContext from '../../hooks/index.jsx';
+import socket from '../../socketApi.js';
 
 function modalRenameChannel() {
   const { t } = useTranslation();
@@ -15,7 +15,6 @@ function modalRenameChannel() {
   const [validationError, setValidationError] = useState('');
   const [disabled, setDisabled] = useState(false);
   const dispatch = useDispatch();
-  const context = useAppContext();
   const idChannel = useSelector((state) => state.modals.id);
   const channels = useSelector(channelsSelectors.selectAll);
   const namesChannels = channels.map((channel) => channel.name);
@@ -26,7 +25,7 @@ function modalRenameChannel() {
       setDisabled(true);
       try {
         validateModal(values.name, namesChannels, t);
-        context.socket.emit('renameChannel', { id: idChannel, name: values.name }, (response) => {
+        socket.emit('renameChannel', { id: idChannel, name: values.name }, (response) => {
           if (response.status === 'ok') {
             console.log('канал переименован');
           } else {
@@ -34,7 +33,7 @@ function modalRenameChannel() {
           }
         });
 
-        context.socket.on('renameChannel', (channel) => {
+        socket.on('renameChannel', (channel) => {
           console.log(channel);
           setDisabled(false);
           dispatch(channelsActions.renameChannel({

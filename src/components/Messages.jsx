@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { actions as messagesActions, selectors as messagesSelectors } from '../slices/messagesSlice.js';
 import { selectors as channelsSelectors } from '../slices/channelsSlice.js';
-import useAppContext from '../hooks/index.jsx';
+import socket from '../socketApi.js';
 
 function Messages() {
   const { t } = useTranslation();
@@ -16,7 +16,6 @@ function Messages() {
   const dispatch = useDispatch();
   const inputRef = useRef();
   const chatRef = useRef(null);
-  const context = useAppContext();
   const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
@@ -32,7 +31,7 @@ function Messages() {
       setDisabled(true);
       const { username } = JSON.parse(localStorage.getItem('userId'));
       const msg = { ...values, channelId: currentChannelId, username };
-      context.socket.emit('newMessage', msg, (response) => {
+      socket.emit('newMessage', msg, (response) => {
         console.log('response', response);
         if (response.status === 'ok') {
           console.log('успешно');
@@ -40,7 +39,7 @@ function Messages() {
           console.log('ошибка');
         }
       });
-      context.socket.on('newMessage', (message) => {
+      socket.on('newMessage', (message) => {
         console.log(message);
         dispatch(messagesActions.addOneMessage(message));
         setDisabled(false);

@@ -7,14 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actions as channelsActions, selectors as channelsSelectors } from '../../slices/channelsSlice.js';
 import validateModal from '../../validateModal.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
-import useAppContext from '../../hooks/index.jsx';
+import socket from '../../socketApi.js';
 
 function modalAddChannel() {
   const { t } = useTranslation();
   const [failedValue, setFailedValue] = useState(false);
   const [validationError, setValidationError] = useState('');
   const dispatch = useDispatch();
-  const context = useAppContext();
   const [disabled, setDisabled] = useState(false);
   const channels = useSelector(channelsSelectors.selectAll);
   const namesChannels = channels.map((channel) => channel.name);
@@ -24,7 +23,7 @@ function modalAddChannel() {
       setDisabled(true);
       try {
         validateModal(values.name, namesChannels, t);
-        context.socket.emit('newChannel', values, (response) => {
+        socket.emit('newChannel', values, (response) => {
           if (response.status === 'ok') {
             console.log('канал добавлен');
           } else {
@@ -32,7 +31,7 @@ function modalAddChannel() {
           }
         });
 
-        context.socket.on('newChannel', (channel) => {
+        socket.on('newChannel', (channel) => {
           console.log(channel);
           dispatch(channelsActions.addOneChannel(channel));
           dispatch(channelsActions.setCurrentChannelId(channel.id));
@@ -40,13 +39,6 @@ function modalAddChannel() {
           setDisabled(false);
           toast.success(t('create channel'), {
             toastId: channel.id,
-          });
-        });
-
-        context.socket.on('disconnect', (reason) => {
-          console.log('reason', reason);
-          toast.error(t('connection error'), {
-            toastId: values.name,
           });
         });
       } catch (e) {

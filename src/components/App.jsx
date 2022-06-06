@@ -7,7 +7,6 @@ import {
 } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { io } from 'socket.io-client';
 import { useTranslation } from 'react-i18next';
 import { Button, Navbar, Container } from 'react-bootstrap';
 import AppContext from '../contexts/index.jsx';
@@ -18,7 +17,6 @@ import SignupPage from './SignupPage.jsx';
 import useAppContext from '../hooks/index.jsx';
 
 function AppProvider({ children }) {
-  const socket = io();
   const [loggedIn, setLoggedIn] = useState(false);
   const logIn = () => setLoggedIn(true);
   const logOut = () => {
@@ -26,7 +24,7 @@ function AppProvider({ children }) {
     setLoggedIn(false);
   };
   const context = useMemo(() => ({
-    loggedIn, logIn, logOut, socket,
+    loggedIn, logIn, logOut,
   }), [loggedIn]);
   return (
     <AppContext.Provider value={context}>

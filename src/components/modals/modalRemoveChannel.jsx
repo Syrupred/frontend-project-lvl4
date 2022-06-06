@@ -5,25 +5,24 @@ import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { actions as channelsActions } from '../../slices/channelsSlice.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
-import useAppContext from '../../hooks/index.jsx';
+import socket from '../../socketApi.js';
 
 function modalRemoveChannel() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const idChannel = useSelector((state) => state.modals.id);
-  const context = useAppContext();
   const [disabled, setDisabled] = useState(false);
 
   const removeChannel = () => {
     setDisabled(true);
-    context.socket.emit('removeChannel', { id: idChannel }, (response) => {
+    socket.emit('removeChannel', { id: idChannel }, (response) => {
       if (response.status === 'ok') {
         console.log('канал удален');
       } else {
         console.log('ошибка. канал не удален');
       }
     });
-    context.socket.on('removeChannel', (channel) => {
+    socket.on('removeChannel', (channel) => {
       setDisabled(false);
       dispatch(channelsActions.removeChannel(channel.id));
       dispatch(channelsActions.setCurrentChannelId(1));
