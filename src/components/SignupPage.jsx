@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik';
+import { useTranslation } from 'react-i18next';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -8,6 +9,7 @@ import useAppContext from '../hooks/index.jsx';
 import img from '../images/signup.png';
 
 function SignupPage() {
+  const { t } = useTranslation();
   const context = useAppContext();
   const [disabled, setDisabled] = useState(false);
   const inputRef = useRef();
@@ -25,15 +27,15 @@ function SignupPage() {
     },
     validationSchema: Yup.object({
       username: Yup.string()
-        .min(3, 'имя пользователя от 3 до 20 символов')
-        .max(20, 'имя пользователя от 3 до 20 символов')
-        .required('обязательное поле'),
+        .min(3, t('3 to 20 characters'))
+        .max(20, t('3 to 20 characters'))
+        .required(t('required field')),
       password: Yup.string()
-        .min(6, 'не менее 6 символов')
-        .required('обязательное поле'),
+        .min(6, t('at least 6 characters'))
+        .required(t('required field')),
       confirmPassword: Yup.string()
-        .oneOf([Yup.ref('password'), null], 'пароли должны совпадать')
-        .required('обязательное поле'),
+        .oneOf([Yup.ref('password'), null], t('passwords must match'))
+        .required(t('required field')),
     }),
     onSubmit: async (values) => {
       setDisabled(true);
@@ -65,7 +67,7 @@ function SignupPage() {
                 <img src={img} className="rounded-circle" alt="Регистрация" />
               </div>
               <Form onSubmit={formik.handleSubmit} className="p-3" noValidate>
-                <h1 className="text-center mb-4">Регистрация</h1>
+                <h1 className="text-center mb-4">{t('registration')}</h1>
                 <Form.Group className="form-floating mb-3">
                   <Form.Control
                     onChange={formik.handleChange}
@@ -81,7 +83,7 @@ function SignupPage() {
                     isInvalid={login || (formik.touched.username && formik.errors.username)}
 
                   />
-                  <Form.Label className="form-label" htmlFor="username">Имя пользователя</Form.Label>
+                  <Form.Label className="form-label" htmlFor="username">{t('username')}</Form.Label>
                   {formik.touched.username && formik.errors.username ? (
                     <Form.Control.Feedback tooltip type="invalid">{formik.errors.username}</Form.Control.Feedback>
 
@@ -101,7 +103,7 @@ function SignupPage() {
                     required
 
                   />
-                  <Form.Label htmlFor="password">Пароль</Form.Label>
+                  <Form.Label htmlFor="password">{t('password')}</Form.Label>
                   {formik.touched.password && formik.errors.password ? (
                     <Form.Control.Feedback tooltip type="invalid">{formik.errors.password}</Form.Control.Feedback>
                   ) : null}
@@ -121,7 +123,7 @@ function SignupPage() {
                     required
 
                   />
-                  <Form.Label htmlFor="confirmPassword">Подтвердите пароль</Form.Label>
+                  <Form.Label htmlFor="confirmPassword">{t('confirmPassword')}</Form.Label>
 
                   {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
                     <Form.Control.Feedback tooltip type="invalid">
@@ -131,13 +133,13 @@ function SignupPage() {
                   { login ? (
 
                     <Form.Control.Feedback tooltip type="invalid">
-                      Такой пользователь уже существует
+                      {t('this user already exists')}
                     </Form.Control.Feedback>
 
                   ) : null}
                 </Form.Group>
 
-                <Button disabled={disabled} type="submit" variant="outline-primary" className="w-100 btn btn-outline-primary">Зарегистрироваться</Button>
+                <Button disabled={disabled} type="submit" variant="outline-primary" className="w-100 btn btn-outline-primary">{t('register')}</Button>
               </Form>
             </div>
           </div>

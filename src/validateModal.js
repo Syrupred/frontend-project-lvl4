@@ -1,14 +1,14 @@
 import * as yup from 'yup';
 
-const validateModal = (value, channels) => {
+const validateModal = (value, channels, t) => {
   yup.setLocale({
     mixed: {
-      required: () => 'notEmpty',
-      notOneOf: () => 'duplication',
+      required: () => t('required field'),
+      notOneOf: () => t('duplication'),
     },
     string: {
-      min: () => 'minLengthValue',
-      max: () => 'maxLengthValue',
+      min: () => t('3 to 20 characters'),
+      max: () => t('3 to 20 characters'),
     },
 
   });
@@ -21,7 +21,7 @@ const validateModal = (value, channels) => {
     .max(20)
     .notOneOf(channels);
 
-  return schema.validateSync(value, { abortEarly: false });
+  return schema.validateSync(value);
 };
 
 export default validateModal;

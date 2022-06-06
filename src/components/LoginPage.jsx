@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +8,7 @@ import useAppContext from '../hooks/index.jsx';
 import img from '../images/login.png';
 
 function LoginPage() {
+  const { t } = useTranslation();
   const context = useAppContext();
   const [authFailed, setAuthFailed] = useState(false);
   const [disabled, setDisabled] = useState(false);
@@ -52,7 +54,7 @@ function LoginPage() {
                 <img className="rounded-circle" alt="Войти" src={img} />
               </div>
               <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0" noValidate>
-                <h1 className="text-center mb-4">Войти</h1>
+                <h1 className="text-center mb-4">{t('logIn')}</h1>
                 <Form.Group className="form-floating mb-3">
 
                   <Form.Control
@@ -68,7 +70,7 @@ function LoginPage() {
                     required
                     ref={inputRef}
                   />
-                  <Form.Label htmlFor="username">Ваш ник</Form.Label>
+                  <Form.Label htmlFor="username">{t('nickname')}</Form.Label>
                 </Form.Group>
                 <Form.Group className="form-floating mb-3">
 
@@ -85,8 +87,8 @@ function LoginPage() {
                     isInvalid={authFailed}
                     required
                   />
-                  <Form.Label htmlFor="password">Пароль</Form.Label>
-                  <Form.Control.Feedback type="invalid">Неверные имя пользователя или пароль</Form.Control.Feedback>
+                  <Form.Label htmlFor="password">{t('password')}</Form.Label>
+                  <Form.Control.Feedback type="invalid">{t('invalid username or password')}</Form.Control.Feedback>
                 </Form.Group>
                 <Button disabled={disabled} type="submit" variant="outline-primary" className="w-100 btn btn-outline-primary">Войти</Button>
               </Form>
@@ -94,8 +96,8 @@ function LoginPage() {
             </div>
             <div className="card-footer p-4">
               <div className="text-center">
-                <span>Нет аккаунта?  </span>
-                <a href="/signup">Регистрация</a>
+                <span>{t('do not have an account?')}</span>
+                <a href="/signup">{t('registration')}</a>
               </div>
             </div>
           </div>

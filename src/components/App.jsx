@@ -5,7 +5,10 @@ import {
   Route,
   Link,
 } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { io } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 import { Button, Navbar, Container } from 'react-bootstrap';
 import AppContext from '../contexts/index.jsx';
 import LoginPage from './LoginPage.jsx';
@@ -32,17 +35,18 @@ function AppProvider({ children }) {
   );
 }
 
-function AuthButton() {
+function AuthButton({ t }) {
   const context = useAppContext();
 
   return (
     context.loggedIn
-      ? <Button onClick={context.logOut} as={Link} to="/login">Выйти</Button>
+      ? <Button onClick={context.logOut} as={Link} to="/login">{t('logout')}</Button>
       : null
   );
 }
 
 function App() {
+  const { t } = useTranslation();
   return (
     <div className="d-flex flex-column h-100">
       <AppProvider>
@@ -50,8 +54,8 @@ function App() {
 
           <Navbar bg="white" expand="lg" className="shadow-sm">
             <Container>
-              <Navbar.Brand as={Link} to="/">Hexlet Chat</Navbar.Brand>
-              <AuthButton />
+              <Navbar.Brand as={Link} to="/">{t('hexlet chat')}</Navbar.Brand>
+              <AuthButton t={t} />
             </Container>
 
           </Navbar>
@@ -62,6 +66,8 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="*" element={<NoMatch />} />
           </Routes>
+
+          <ToastContainer />
 
         </Router>
       </AppProvider>

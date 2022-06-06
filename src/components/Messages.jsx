@@ -1,12 +1,14 @@
 import { Button, Form } from 'react-bootstrap';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { actions as messagesActions, selectors as messagesSelectors } from '../slices/messagesSlice.js';
 import { selectors as channelsSelectors } from '../slices/channelsSlice.js';
 import useAppContext from '../hooks/index.jsx';
 
 function Messages() {
+  const { t } = useTranslation();
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
   const allMessages = useSelector(messagesSelectors.selectAll);
   const messages = allMessages.filter((message) => message.channelId === currentChannelId);
@@ -65,8 +67,7 @@ function Messages() {
           </p>
           <span className="text-muted">
             {messages.length}
-            {' '}
-            сообщения
+            {t('key', { count: messages.length })}
           </span>
         </div>
 
@@ -88,7 +89,7 @@ function Messages() {
                 onChange={formik.handleChange}
                 className="border-0 p-0 ps-2 form-control"
                 aria-label="Новое сообщение"
-                placeholder="Введите сообщение..."
+                placeholder={t('enter your message')}
                 name="body"
                 id="body"
                 required
@@ -98,7 +99,7 @@ function Messages() {
               />
               <Button
                 variant="white"
-                disabled={disabled}
+                disabled={(formik.values.body === '') || disabled}
                 type="submit"
                 className="btn-group-vertical"
               >

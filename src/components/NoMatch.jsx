@@ -1,12 +1,14 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 function NoMatch() {
+  const { t } = useTranslation();
   return (
     <div className="text-center">
-      <h1 className="h4 text-muted">Страница не найдена</h1>
+      <h1 className="h4 text-muted">{t('page not found')}</h1>
       <p className="text-muted">
-        Но вы можете перейти
-        <a href="/"> на главную страницу</a>
+        {t('but you can go')}
+        <a href="/">{t('to home page')}</a>
       </p>
     </div>
 

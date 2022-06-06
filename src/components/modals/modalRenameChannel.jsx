@@ -2,12 +2,14 @@ import { useFormik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { actions as channelsActions, selectors as channelsSelectors } from '../../slices/channelsSlice.js';
 import validateModal from '../../validateModal.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
 import useAppContext from '../../hooks/index.jsx';
 
 function modalRenameChannel() {
+  const { t } = useTranslation();
   const [failedValue, setFailedValue] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [disabled, setDisabled] = useState(false);
@@ -22,7 +24,7 @@ function modalRenameChannel() {
     onSubmit: (values) => {
       setDisabled(true);
       try {
-        validateModal(values.name, namesChannels);
+        validateModal(values.name, namesChannels, t);
         context.socket.emit('renameChannel', { id: idChannel, name: values.name }, (response) => {
           if (response.status === 'ok') {
             console.log('канал переименован');
@@ -61,13 +63,12 @@ function modalRenameChannel() {
   return (
     <Modal show centered>
       <Modal.Header closeButton onClick={() => dispatch(modalsActions.hideModal())}>
-        <Modal.Title>Переименовать канал</Modal.Title>
+        <Modal.Title>{t('rename channel')}</Modal.Title>
       </Modal.Header>
       <Form onSubmit={formik.handleSubmit}>
         <Form.Group>
           <Modal.Body>
             <Form.Control
-              required
               ref={inputRef}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -79,8 +80,8 @@ function modalRenameChannel() {
             <Form.Control.Feedback type="invalid">{validationError}</Form.Control.Feedback>
           </Modal.Body>
           <Modal.Footer>
-            <Button type="close" onClick={() => dispatch(modalsActions.hideModal())} variant="secondary" className="btn btn-group-vertical">Отменить</Button>
-            <Button type="submit" disabled={disabled} className="btn btn-group-vertical">Отправить</Button>
+            <Button type="close" onClick={() => dispatch(modalsActions.hideModal())} variant="secondary" className="btn btn-group-vertical">{t('cancel')}</Button>
+            <Button type="submit" disabled={disabled} className="btn btn-group-vertical">{t('send')}</Button>
           </Modal.Footer>
         </Form.Group>
       </Form>

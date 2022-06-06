@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { actions as channelsActions } from '../../slices/channelsSlice.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
 import useAppContext from '../../hooks/index.jsx';
 
 function modalRemoveChannel() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const idChannel = useSelector((state) => state.modals.id);
   const context = useAppContext();
@@ -34,14 +36,14 @@ function modalRemoveChannel() {
   return (
     <Modal show centered>
       <Modal.Header closeButton onClick={() => dispatch(modalsActions.hideModal())}>
-        <Modal.Title>Удалить канал</Modal.Title>
+        <Modal.Title>{t('remove channel')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Уверены?</p>
+        <p>{t('sure')}</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="close" onClick={() => dispatch(modalsActions.hideModal())} variant="secondary" className="btn btn-group-vertical">Отменить</Button>
-        <Button type="submit" disabled={disabled} onClick={removeChannel} className="btn btn-group-vertical">Удалить</Button>
+        <Button type="close" onClick={() => dispatch(modalsActions.hideModal())} variant="secondary" className="btn btn-group-vertical">{t('cancel')}</Button>
+        <Button type="submit" disabled={disabled} onClick={removeChannel} className="btn btn-group-vertical">{t('delete')}</Button>
       </Modal.Footer>
     </Modal>
   );

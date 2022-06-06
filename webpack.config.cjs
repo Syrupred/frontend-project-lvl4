@@ -48,6 +48,13 @@ module.exports = {
           name: 'images/[name].[ext]',
         },
       },
+      {
+        test: /\.css$/i,
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' },
+        ],
+      },
     ],
   },
 };

@@ -11,6 +11,7 @@ import { Provider } from 'react-redux';
 
 import App from './components/App.jsx';
 import store from './slices/index.js';
+import './i18n.js';
 
 if (process.env.NODE_ENV !== 'production') {
   localStorage.debug = 'chat:*';
