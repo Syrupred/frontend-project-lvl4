@@ -1,8 +1,10 @@
+/* eslint-disable no-param-reassign */
 import { Button, Form } from 'react-bootstrap';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
+import filterBadWords from '../filterBadWords.js';
 import { actions as messagesActions, selectors as messagesSelectors } from '../slices/messagesSlice.js';
 import { selectors as channelsSelectors } from '../slices/channelsSlice.js';
 import socket from '../socketApi.js';
@@ -40,12 +42,11 @@ function Messages() {
         }
       });
       socket.on('newMessage', (message) => {
-        console.log(message);
-        dispatch(messagesActions.addOneMessage(message));
+        const body = filterBadWords(message.body);
+        dispatch(messagesActions.addOneMessage({ ...message, body }));
         setDisabled(false);
       });
 
-      // eslint-disable-next-line no-param-reassign
       values.body = '';
     },
   });

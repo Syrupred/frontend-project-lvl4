@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import useAppContext from '../hooks/index.jsx';
+import filterBadWords from '../filterBadWords.js';
 import { actions as channelsActions, selectors as channelsSelectors } from '../slices/channelsSlice.js';
 import { actions as messagesActions } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
@@ -35,8 +36,16 @@ function MainPage() {
       try {
         const { data } = await axios.get('/api/v1/data', { headers: getAuthHeader() });
         context.logIn();
-        dispatch(channelsActions.addChannels(data.channels));
-        dispatch(messagesActions.addMessages(data.messages));
+        const goodChannels = data.channels.map((channel) => {
+          const name = filterBadWords(channel.name);
+          return { ...channel, name };
+        });
+        const goodMessages = data.messages.map((message) => {
+          const body = filterBadWords(message.body);
+          return { ...message, body };
+        });
+        dispatch(channelsActions.addChannels(goodChannels));
+        dispatch(messagesActions.addMessages(goodMessages));
       } catch (err) {
         if (err.isAxiosError && err.response.status === 401) {
           navigate('/login');

@@ -4,6 +4,7 @@ import { Form, Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import filterBadWords from '../../filterBadWords.js';
 import { actions as channelsActions, selectors as channelsSelectors } from '../../slices/channelsSlice.js';
 import validateModal from '../../validateModal.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
@@ -34,12 +35,12 @@ function modalRenameChannel() {
         });
 
         socket.on('renameChannel', (channel) => {
-          console.log(channel);
+          const name = filterBadWords(channel.name);
           setDisabled(false);
           dispatch(channelsActions.renameChannel({
             id: channel.id,
             changes: {
-              name: channel.name,
+              name,
             },
           }));
           dispatch(modalsActions.hideModal());

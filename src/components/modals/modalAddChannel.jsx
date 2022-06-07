@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import filterBadWords from '../../filterBadWords.js';
 import { actions as channelsActions, selectors as channelsSelectors } from '../../slices/channelsSlice.js';
 import validateModal from '../../validateModal.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
@@ -32,8 +33,8 @@ function modalAddChannel() {
         });
 
         socket.on('newChannel', (channel) => {
-          console.log(channel);
-          dispatch(channelsActions.addOneChannel(channel));
+          const name = filterBadWords(channel.name);
+          dispatch(channelsActions.addOneChannel({ ...channel, name }));
           dispatch(channelsActions.setCurrentChannelId(channel.id));
           dispatch(modalsActions.hideModal());
           setDisabled(false);
