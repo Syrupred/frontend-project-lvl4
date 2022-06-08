@@ -26,13 +26,7 @@ function modalRenameChannel() {
       setDisabled(true);
       try {
         validateModal(values.name, namesChannels, t);
-        socket.emit('renameChannel', { id: idChannel, name: values.name }, (response) => {
-          if (response.status === 'ok') {
-            console.log('канал переименован');
-          } else {
-            console.log('ошибка. канал не переименован');
-          }
-        });
+        socket.emit('renameChannel', { id: idChannel, name: values.name });
 
         socket.on('renameChannel', (channel) => {
           const name = filterBadWords(channel.name);

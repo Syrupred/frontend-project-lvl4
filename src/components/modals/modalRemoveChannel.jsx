@@ -15,13 +15,7 @@ function modalRemoveChannel() {
 
   const removeChannel = () => {
     setDisabled(true);
-    socket.emit('removeChannel', { id: idChannel }, (response) => {
-      if (response.status === 'ok') {
-        console.log('канал удален');
-      } else {
-        console.log('ошибка. канал не удален');
-      }
-    });
+    socket.emit('removeChannel', { id: idChannel });
     socket.on('removeChannel', (channel) => {
       setDisabled(false);
       dispatch(channelsActions.removeChannel(channel.id));

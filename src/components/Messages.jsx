@@ -33,14 +33,7 @@ function Messages() {
       setDisabled(true);
       const { username } = JSON.parse(localStorage.getItem('userId'));
       const msg = { ...values, channelId: currentChannelId, username };
-      socket.emit('newMessage', msg, (response) => {
-        console.log('response', response);
-        if (response.status === 'ok') {
-          console.log('успешно');
-        } else {
-          console.log('ошибка');
-        }
-      });
+      socket.emit('newMessage', msg);
       socket.on('newMessage', (message) => {
         const body = filterBadWords(message.body);
         dispatch(messagesActions.addOneMessage({ ...message, body }));

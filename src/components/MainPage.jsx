@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import { useRollbar } from '@rollbar/react';
 import useAppContext from '../hooks/index.jsx';
 import filterBadWords from '../filterBadWords.js';
 import { actions as channelsActions, selectors as channelsSelectors } from '../slices/channelsSlice.js';
@@ -23,6 +24,7 @@ const getAuthHeader = () => {
 };
 
 function MainPage() {
+  const rollbar = useRollbar();
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const context = useAppContext();
@@ -46,11 +48,12 @@ function MainPage() {
         });
         dispatch(channelsActions.addChannels(goodChannels));
         dispatch(messagesActions.addMessages(goodMessages));
-      } catch (err) {
-        if (err.isAxiosError && err.response.status === 401) {
+      } catch (error) {
+        if (error.isAxiosError && error.response.status === 401) {
           navigate('/login');
         } else {
           toast.error(t('connection error'));
+          rollbar.error('Error fetching data from server, mainpage', error);
         }
       }
     };

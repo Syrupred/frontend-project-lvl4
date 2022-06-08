@@ -24,13 +24,7 @@ function modalAddChannel() {
       setDisabled(true);
       try {
         validateModal(values.name, namesChannels, t);
-        socket.emit('newChannel', values, (response) => {
-          if (response.status === 'ok') {
-            console.log('канал добавлен');
-          } else {
-            console.log('ошибка. канал не добавлен');
-          }
-        });
+        socket.emit('newChannel', values);
 
         socket.on('newChannel', (channel) => {
           const name = filterBadWords(channel.name);

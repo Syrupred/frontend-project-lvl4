@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useRollbar } from '@rollbar/react';
 import { useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -9,6 +10,7 @@ import useAppContext from '../hooks/index.jsx';
 import img from '../images/login.png';
 
 function LoginPage() {
+  const rollbar = useRollbar();
   const { t } = useTranslation();
   const context = useAppContext();
   const [authFailed, setAuthFailed] = useState(false);
@@ -33,14 +35,15 @@ function LoginPage() {
         localStorage.setItem('userId', JSON.stringify(res.data));
         context.logIn();
         navigate('/');
-      } catch (err) {
-        if (err.isAxiosError && err.response.status === 401) {
+      } catch (error) {
+        if (error.isAxiosError && error.response.status === 401) {
           setAuthFailed(true);
           inputRef.current.select();
           setDisabled(false);
         } else {
           toast.error(t('connection error'));
           setDisabled(false);
+          rollbar.error('Error fetching data from server, loginpage', error);
         }
       }
     },

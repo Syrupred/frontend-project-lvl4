@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useRollbar } from '@rollbar/react';
 import { toast } from 'react-toastify';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,7 @@ import useAppContext from '../hooks/index.jsx';
 import img from '../images/signup.png';
 
 function SignupPage() {
+  const rollbar = useRollbar();
   const { t } = useTranslation();
   const context = useAppContext();
   const [disabled, setDisabled] = useState(false);
@@ -43,17 +45,17 @@ function SignupPage() {
 
       try {
         const res = await axios.post('/api/v1/signup', values);
-        console.log(res.data);
         localStorage.setItem('userId', JSON.stringify(res.data));
         context.logIn();
         navigate('/');
-      } catch (err) {
-        if (err.isAxiosError && err.response.status === 409) {
+      } catch (error) {
+        if (error.isAxiosError && error.response.status === 409) {
           setDisabled(false);
           setAvailabilityLogin(true);
         } else {
           toast.error(t('connection error'));
           setDisabled(false);
+          rollbar.error('Error fetching data from server, signuppage', error);
         }
       }
     },

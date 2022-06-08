@@ -8,6 +8,7 @@ import {
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
+import { Provider } from '@rollbar/react';
 import { Button, Navbar, Container } from 'react-bootstrap';
 import AppContext from '../contexts/index.jsx';
 import LoginPage from './LoginPage.jsx';
@@ -43,33 +44,40 @@ function AuthButton({ t }) {
   );
 }
 
+const rollbarConfig = {
+  accessToken: '183c62d6671149b698840199ead0910f',
+  environment: 'production',
+};
+
 function App() {
   const { t } = useTranslation();
   return (
-    <div className="d-flex flex-column h-100">
-      <AppProvider>
-        <Router>
+    <Provider config={rollbarConfig}>
+      <div className="d-flex flex-column h-100">
+        <AppProvider>
+          <Router>
 
-          <Navbar bg="white" expand="lg" className="shadow-sm">
-            <Container>
-              <Navbar.Brand as={Link} to="/">{t('hexlet chat')}</Navbar.Brand>
-              <AuthButton t={t} />
-            </Container>
+            <Navbar bg="white" expand="lg" className="shadow-sm">
+              <Container>
+                <Navbar.Brand as={Link} to="/">{t('hexlet chat')}</Navbar.Brand>
+                <AuthButton t={t} />
+              </Container>
 
-          </Navbar>
+            </Navbar>
 
-          <Routes>
-            <Route path="/" element={<MainPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="*" element={<NoMatch />} />
-          </Routes>
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="*" element={<NoMatch />} />
+            </Routes>
 
-          <ToastContainer />
+            <ToastContainer />
 
-        </Router>
-      </AppProvider>
-    </div>
+          </Router>
+        </AppProvider>
+      </div>
+    </Provider>
   );
 }
 
