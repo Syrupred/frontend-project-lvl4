@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useRollbar } from '@rollbar/react';
 import useAppContext from '../hooks/index.jsx';
 import filterBadWords from '../filterBadWords.js';
-import { actions as channelsActions, selectors as channelsSelectors } from '../slices/channelsSlice.js';
+import { actions as channelsActions } from '../slices/channelsSlice.js';
 import { actions as messagesActions } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import getModal from './modals/index.js';
@@ -29,7 +29,6 @@ function MainPage() {
   const dispatch = useDispatch();
   const context = useAppContext();
   const navigate = useNavigate();
-  const channels = useSelector(channelsSelectors.selectAll);
   const modalType = useSelector((state) => state.modals.type);
   const ComponentModal = getModal(modalType);
 
@@ -61,7 +60,7 @@ function MainPage() {
     fetchContent();
   }, []);
 
-  return channels.length > 0 && (
+  return context.loggedIn && (
   <div className="container h-100 my-4 overflow-hidden rounded shadow">
     <div className="row h-100 bg-white flex-md-row">
 
