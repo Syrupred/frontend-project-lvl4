@@ -16,7 +16,9 @@ module.exports = {
     publicPath: '/assets/',
   },
   devServer: {
-    overlay: false,
+    client: {
+      overlay: false,
+    },
     compress: true,
     port: 8090,
     host: '0.0.0.0',
