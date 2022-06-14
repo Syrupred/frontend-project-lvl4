@@ -63,7 +63,6 @@ function modalAddChannel() {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.name}
-              data-testid="input-name"
               name="name"
               isInvalid={failedValue}
               onKeyPress={(e) => {
