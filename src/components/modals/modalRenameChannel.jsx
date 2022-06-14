@@ -39,7 +39,7 @@ function modalRenameChannel() {
           }));
           dispatch(modalsActions.hideModal());
           toast.success(t('channel renamed'), {
-            toastId: channel.id,
+            toastId: channel.name,
           });
         });
       } catch (e) {

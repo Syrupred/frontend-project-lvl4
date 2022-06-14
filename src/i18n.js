@@ -39,7 +39,7 @@ const resources = {
       duplication: 'Должно быть уникальным',
       'create channel': 'Канал создан',
       'connection error': 'Ошибка соединения',
-      'channel removed': 'Канал удален',
+      'channel removed': 'Канал удалён',
       'channel renamed': 'Канал переименован',
     },
   },

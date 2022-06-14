@@ -4,8 +4,7 @@ import i18n from './i18n.js';
 
 const socket = io();
 
-socket.on('disconnect', (reason) => {
-  console.log('reason', reason);
+socket.on('disconnect', () => {
   toast.error(i18n.t('connection error'));
 });
 

@@ -33,7 +33,7 @@ function modalAddChannel() {
           dispatch(modalsActions.hideModal());
           setDisabled(false);
           toast.success(t('create channel'), {
-            toastId: channel.id,
+            toastId: channel.name,
           });
         });
       } catch (e) {
