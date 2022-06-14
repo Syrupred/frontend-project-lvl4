@@ -7,7 +7,7 @@ import { actions as channelsActions } from '../../slices/channelsSlice.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
 import socket from '../../socketApi.js';
 
-function modalRemoveChannel() {
+function ModalRemoveChannel() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const idChannel = useSelector((state) => state.modals.id);
@@ -43,4 +43,4 @@ function modalRemoveChannel() {
   );
 }
 
-export default modalRemoveChannel;
+export default ModalRemoveChannel;

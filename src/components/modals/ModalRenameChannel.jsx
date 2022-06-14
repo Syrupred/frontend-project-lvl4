@@ -10,7 +10,7 @@ import validateModal from '../../validateModal.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
 import socket from '../../socketApi.js';
 
-function modalRenameChannel() {
+function ModalRenameChannel() {
   const { t } = useTranslation();
   const [failedValue, setFailedValue] = useState(false);
   const [validationError, setValidationError] = useState('');
@@ -90,4 +90,4 @@ function modalRenameChannel() {
   );
 }
 
-export default modalRenameChannel;
+export default ModalRenameChannel;
