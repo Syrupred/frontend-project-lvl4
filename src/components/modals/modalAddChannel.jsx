@@ -66,6 +66,11 @@ function modalAddChannel() {
               data-testid="input-name"
               name="name"
               isInvalid={failedValue}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  formik.handleSubmit();
+                }
+              }}
             />
             <Form.Label className="visually-hidden" htmlFor="name">Имя канала</Form.Label>
             <Form.Control.Feedback type="invalid">{validationError}</Form.Control.Feedback>
