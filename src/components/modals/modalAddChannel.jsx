@@ -66,6 +66,7 @@ function modalAddChannel() {
               name="name"
               isInvalid={failedValue}
             />
+            <Form.Label className="visually-hidden" htmlFor="name">Имя канала</Form.Label>
             <Form.Control.Feedback type="invalid">{validationError}</Form.Control.Feedback>
           </Modal.Body>
           <Modal.Footer>

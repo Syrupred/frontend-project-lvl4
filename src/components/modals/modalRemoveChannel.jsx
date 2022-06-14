@@ -37,7 +37,7 @@ function modalRemoveChannel() {
       </Modal.Body>
       <Modal.Footer>
         <Button type="close" onClick={() => dispatch(modalsActions.hideModal())} variant="secondary" className="btn btn-group-vertical">{t('cancel')}</Button>
-        <Button type="submit" disabled={disabled} onClick={removeChannel} className="btn btn-group-vertical">{t('delete')}</Button>
+        <Button type="submit" disabled={disabled} onClick={removeChannel} className="btn-danger">{t('delete')}</Button>
       </Modal.Footer>
     </Modal>
   );
