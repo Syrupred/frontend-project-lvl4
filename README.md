@@ -31,6 +31,6 @@ To enter the chat, you can use username: admin, password: admin.
 
 ### Setup
 
-* git clone <git@github.com:Syrupred/frontend-project-lvl4.git>
+* git clone !(git@github.com:Syrupred/frontend-project-lvl4.git)
 * make install
 * make start
