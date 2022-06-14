@@ -45,14 +45,14 @@ function Messages() {
   });
   const nameCurrentChannel = channels.filter((channel) => channel.id === currentChannelId)[0]?.name;
 
+  const viewNameChannel = `# ${nameCurrentChannel}`;
   return (
     <div className="col p-0 h-100">
       <div className="d-flex flex-column h-100">
         <div className="bg-light mb-4 p-3 shadow-sm small">
           <p className="m-0">
             <b>
-              #
-              {nameCurrentChannel}
+              {viewNameChannel}
             </b>
           </p>
           <span className="text-muted">
