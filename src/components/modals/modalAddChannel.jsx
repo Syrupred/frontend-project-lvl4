@@ -58,6 +58,7 @@ function modalAddChannel() {
         <Form.Group>
           <Modal.Body>
             <Form.Control
+              id="name"
               ref={inputRef}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
