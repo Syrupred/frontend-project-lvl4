@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { Provider as RollbarProvider } from '@rollbar/react';
 import { initReactI18next } from 'react-i18next';
 import filter from 'leo-profanity';
+import { io } from 'socket.io-client';
 import i18n from 'i18next';
 import ru from './locales/ru.js';
 import App from './components/App.jsx';
@@ -14,7 +15,7 @@ import modalsReducer from './slices/modalsSlice.js';
 import AuthProvider from './providers/AuthProvider.jsx';
 import ConnectionProvider from './providers/ConnectionProvider.jsx';
 
-const Init = async (socket) => {
+const Init = async () => {
   const store = configureStore({
     reducer: {
       channels: channelsReducer,
@@ -22,6 +23,8 @@ const Init = async (socket) => {
       modals: modalsReducer,
     },
   });
+
+  const socket = io();
 
   await i18n
     .use(initReactI18next)
