@@ -6,15 +6,15 @@ import { useFormik } from 'formik';
 import { Button, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import useAppContext from '../hooks/index.jsx';
+import useAuth from '../hooks/useAuth.js';
 import img from '../images/login.png';
+import routes from '../routes.js';
 
 function LoginPage() {
   const rollbar = useRollbar();
   const { t } = useTranslation();
-  const context = useAppContext();
+  const auth = useAuth();
   const [authFailed, setAuthFailed] = useState(false);
-  const [disabled, setDisabled] = useState(false);
   const inputRef = useRef();
   const navigate = useNavigate();
   useEffect(() => {
@@ -27,22 +27,18 @@ function LoginPage() {
       password: '',
     },
     onSubmit: async (values) => {
-      setDisabled(true);
       setAuthFailed(false);
 
       try {
-        const res = await axios.post('/api/v1/login', values);
-        localStorage.setItem('userId', JSON.stringify(res.data));
-        context.logIn();
-        navigate('/');
+        const res = await axios.post(routes.loginPath(), values);
+        auth.logIn(res.data);
+        navigate(routes.mainPage());
       } catch (error) {
         if (error.isAxiosError && error.response.status === 401) {
           setAuthFailed(true);
           inputRef.current.select();
-          setDisabled(false);
         } else {
           toast.error(t('connection error'));
-          setDisabled(false);
           rollbar.error('Error fetching data from server, loginpage', error);
         }
       }
@@ -95,7 +91,7 @@ function LoginPage() {
                   <Form.Label htmlFor="password">{t('password')}</Form.Label>
                   <Form.Control.Feedback type="invalid">{t('invalid username or password')}</Form.Control.Feedback>
                 </Form.Group>
-                <Button disabled={disabled} type="submit" variant="outline-primary" className="w-100 btn btn-outline-primary">Войти</Button>
+                <Button type="submit" variant="outline-primary" className="w-100 btn btn-outline-primary">Войти</Button>
               </Form>
 
             </div>

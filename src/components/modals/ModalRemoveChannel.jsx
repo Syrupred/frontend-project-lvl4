@@ -1,30 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { actions as channelsActions } from '../../slices/channelsSlice.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
-import socket from '../../socketApi.js';
+import useConnection from '../../hooks/useConnection';
 
 function ModalRemoveChannel() {
+  const { removeChannel } = useConnection();
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const idChannel = useSelector((state) => state.modals.id);
-  const [disabled, setDisabled] = useState(false);
 
-  const removeChannel = () => {
-    setDisabled(true);
-    socket.emit('removeChannel', { id: idChannel });
-    socket.on('removeChannel', (channel) => {
-      setDisabled(false);
-      dispatch(channelsActions.removeChannel(channel.id));
-      dispatch(channelsActions.setCurrentChannelId(1));
-      dispatch(modalsActions.hideModal());
-      toast.success(t('channel removed'), {
-        toastId: channel.id,
-      });
-    });
+  const deleteChannel = () => {
+    removeChannel({ id: idChannel });
   };
 
   return (
@@ -37,7 +25,7 @@ function ModalRemoveChannel() {
       </Modal.Body>
       <Modal.Footer>
         <Button type="close" onClick={() => dispatch(modalsActions.hideModal())} variant="secondary" className="btn btn-group-vertical">{t('cancel')}</Button>
-        <Button type="submit" disabled={disabled} onClick={removeChannel} className="btn-danger">{t('delete')}</Button>
+        <Button type="submit" onClick={deleteChannel} className="btn-danger">{t('delete')}</Button>
       </Modal.Footer>
     </Modal>
   );

@@ -5,29 +5,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useRollbar } from '@rollbar/react';
-import useAppContext from '../hooks/index.jsx';
-import filterBadWords from '../filterBadWords.js';
+import useAuth from '../hooks/useAuth.js';
 import { actions as channelsActions } from '../slices/channelsSlice.js';
 import { actions as messagesActions } from '../slices/messagesSlice.js';
 import Channels from './Channels.jsx';
 import getModal from './modals/index.js';
 import Messages from './Messages.jsx';
+import routes from '../routes.js';
 
-const getAuthHeader = () => {
-  const userId = JSON.parse(localStorage.getItem('userId'));
-
-  if (userId && userId.token) {
-    return { Authorization: `Bearer ${userId.token}` };
-  }
-
-  return {};
-};
-
-function MainPage() {
+function MainPage({ filter }) {
   const rollbar = useRollbar();
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const context = useAppContext();
+  const auth = useAuth();
   const navigate = useNavigate();
   const modalType = useSelector((state) => state.modals.type);
   const ComponentModal = getModal(modalType);
@@ -35,21 +25,20 @@ function MainPage() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const { data } = await axios.get('/api/v1/data', { headers: getAuthHeader() });
-        context.logIn();
+        const { data } = await axios.get(routes.dataPath(), { headers: { Authorization: `Bearer ${auth.user?.token}` } });
         const goodChannels = data.channels.map((channel) => {
-          const name = filterBadWords(channel.name);
+          const name = filter.clean(channel.name);
           return { ...channel, name };
         });
         const goodMessages = data.messages.map((message) => {
-          const body = filterBadWords(message.body);
+          const body = filter.clean(message.body);
           return { ...message, body };
         });
         dispatch(channelsActions.addChannels(goodChannels));
         dispatch(messagesActions.addMessages(goodMessages));
       } catch (error) {
         if (error.isAxiosError && error.response.status === 401) {
-          navigate('/login');
+          navigate(routes.loginPage());
         } else {
           toast.error(t('connection error'));
           rollbar.error('Error fetching data from server, mainpage', error);
@@ -60,7 +49,7 @@ function MainPage() {
     fetchContent();
   }, []);
 
-  return context.loggedIn && (
+  return auth.user && (
   <div className="container h-100 my-4 overflow-hidden rounded shadow">
     <div className="row h-100 bg-white flex-md-row">
 

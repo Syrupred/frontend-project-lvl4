@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,76 +8,49 @@ import {
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from 'react-i18next';
-import { Provider } from '@rollbar/react';
+
 import { Button, Navbar, Container } from 'react-bootstrap';
-import AppContext from '../contexts/index.jsx';
 import LoginPage from './LoginPage.jsx';
 import NoMatch from './NoMatch.jsx';
 import MainPage from './MainPage.jsx';
 import SignupPage from './SignupPage.jsx';
-import useAppContext from '../hooks/index.jsx';
-
-function AppProvider({ children }) {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const logIn = () => setLoggedIn(true);
-  const logOut = () => {
-    localStorage.removeItem('userId');
-    setLoggedIn(false);
-  };
-  const context = useMemo(() => ({
-    loggedIn, logIn, logOut,
-  }), [loggedIn]);
-  return (
-    <AppContext.Provider value={context}>
-      {children}
-    </AppContext.Provider>
-  );
-}
+import useAuth from '../hooks/useAuth.js';
+import routes from '../routes.js';
 
 function AuthButton({ t }) {
-  const context = useAppContext();
+  const auth = useAuth();
 
   return (
-    context.loggedIn
-      ? <Button onClick={context.logOut} as={Link} to="/login">{t('logout')}</Button>
+    auth.user
+      ? <Button onClick={auth.logOut} as={Link} to={routes.loginPage()}>{t('logout')}</Button>
       : null
   );
 }
 
-const rollbarConfig = {
-  accessToken: '183c62d6671149b698840199ead0910f',
-  environment: 'production',
-};
-
-function App() {
+function App({ filter }) {
   const { t } = useTranslation();
   return (
-    <Provider config={rollbarConfig}>
-      <div className="d-flex flex-column h-100">
-        <AppProvider>
-          <Router>
+    <div className="d-flex flex-column h-100">
+      <Router>
 
-            <Navbar bg="white" expand="lg" className="shadow-sm">
-              <Container>
-                <Navbar.Brand as={Link} to="/">{t('hexlet chat')}</Navbar.Brand>
-                <AuthButton t={t} />
-              </Container>
+        <Navbar bg="white" expand="lg" className="shadow-sm">
+          <Container>
+            <Navbar.Brand as={Link} to={routes.mainPage()}>{t('hexlet chat')}</Navbar.Brand>
+            <AuthButton t={t} />
+          </Container>
+        </Navbar>
 
-            </Navbar>
+        <Routes>
+          <Route path={routes.mainPage()} element={<MainPage filter={filter} />} />
+          <Route path={routes.loginPage()} element={<LoginPage />} />
+          <Route path={routes.signupPage()} element={<SignupPage />} />
+          <Route path="*" element={<NoMatch />} />
+        </Routes>
 
-            <Routes>
-              <Route path="/" element={<MainPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="*" element={<NoMatch />} />
-            </Routes>
+        <ToastContainer />
 
-            <ToastContainer />
-
-          </Router>
-        </AppProvider>
-      </div>
-    </Provider>
+      </Router>
+    </div>
   );
 }
 

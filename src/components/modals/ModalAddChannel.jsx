@@ -1,45 +1,30 @@
 import { useFormik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
-import { toast } from 'react-toastify';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import filterBadWords from '../../filterBadWords.js';
-import { actions as channelsActions, selectors as channelsSelectors } from '../../slices/channelsSlice.js';
+import { selectors as channelsSelectors } from '../../slices/channelsSlice.js';
 import validateModal from '../../validateModal.js';
 import { actions as modalsActions } from '../../slices/modalsSlice.js';
-import socket from '../../socketApi.js';
+import useConnection from '../../hooks/useConnection';
 
 function ModalAddChannel() {
+  const { addNewChannel } = useConnection();
   const { t } = useTranslation();
   const [failedValue, setFailedValue] = useState(false);
   const [validationError, setValidationError] = useState('');
   const dispatch = useDispatch();
-  const [disabled, setDisabled] = useState(false);
   const channels = useSelector(channelsSelectors.selectAll);
   const namesChannels = channels.map((channel) => channel.name);
   const formik = useFormik({
     initialValues: { name: '' },
     onSubmit: (values) => {
-      setDisabled(true);
       try {
         validateModal(values.name, namesChannels, t);
-        socket.emit('newChannel', values);
-
-        socket.on('newChannel', (channel) => {
-          const name = filterBadWords(channel.name);
-          dispatch(channelsActions.addOneChannel({ ...channel, name }));
-          dispatch(channelsActions.setCurrentChannelId(channel.id));
-          dispatch(modalsActions.hideModal());
-          setDisabled(false);
-          toast.success(t('create channel'), {
-            toastId: channel.name,
-          });
-        });
+        addNewChannel(values);
       } catch (e) {
         setValidationError(e.message);
         setFailedValue(true);
-        setDisabled(false);
       }
     },
   });
@@ -76,7 +61,7 @@ function ModalAddChannel() {
           </Modal.Body>
           <Modal.Footer>
             <Button type="close" onClick={() => dispatch(modalsActions.hideModal())} variant="secondary" className="btn btn-group-vertical">{t('cancel')}</Button>
-            <Button type="submit" disabled={disabled} className="btn btn-group-vertical">{t('send')}</Button>
+            <Button type="submit" className="btn btn-group-vertical">{t('send')}</Button>
           </Modal.Footer>
         </Form.Group>
       </Form>

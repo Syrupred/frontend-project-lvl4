@@ -1,24 +1,24 @@
 /* eslint-disable no-param-reassign */
 import { Button, Form } from 'react-bootstrap';
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
-import filterBadWords from '../filterBadWords.js';
-import { actions as messagesActions, selectors as messagesSelectors } from '../slices/messagesSlice.js';
+import { selectors as messagesSelectors } from '../slices/messagesSlice.js';
 import { selectors as channelsSelectors } from '../slices/channelsSlice.js';
-import socket from '../socketApi.js';
+import useConnection from '../hooks/useConnection';
+import useAuth from '../hooks/useAuth.js';
 
 function Messages() {
+  const { addNewMessage } = useConnection();
   const { t } = useTranslation();
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
   const allMessages = useSelector(messagesSelectors.selectAll);
   const messages = allMessages.filter((message) => message.channelId === currentChannelId);
   const channels = useSelector(channelsSelectors.selectAll);
-  const dispatch = useDispatch();
   const inputRef = useRef();
   const chatRef = useRef(null);
-  const [disabled, setDisabled] = useState(false);
+  const auth = useAuth();
 
   useEffect(() => {
     inputRef.current.focus();
@@ -30,16 +30,8 @@ function Messages() {
       body: '',
     },
     onSubmit: (values) => {
-      setDisabled(true);
-      const { username } = JSON.parse(localStorage.getItem('userId'));
-      const msg = { ...values, channelId: currentChannelId, username };
-      socket.emit('newMessage', msg);
-      socket.on('newMessage', (message) => {
-        const body = filterBadWords(message.body);
-        dispatch(messagesActions.addOneMessage({ ...message, body }));
-        setDisabled(false);
-      });
-
+      const msg = { ...values, channelId: currentChannelId, username: auth.user.username };
+      addNewMessage(msg);
       values.body = '';
     },
   });
@@ -89,7 +81,7 @@ function Messages() {
               />
               <Button
                 variant="white"
-                disabled={(formik.values.body === '') || disabled}
+                disabled={formik.values.body === ''}
                 type="submit"
                 className="btn-group-vertical"
               >

@@ -7,14 +7,14 @@ import { toast } from 'react-toastify';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import useAppContext from '../hooks/index.jsx';
+import useAuth from '../hooks/useAuth.js';
 import img from '../images/signup.png';
+import routes from '../routes.js';
 
 function SignupPage() {
   const rollbar = useRollbar();
   const { t } = useTranslation();
-  const context = useAppContext();
-  const [disabled, setDisabled] = useState(false);
+  const auth = useAuth();
   const inputRef = useRef();
   const navigate = useNavigate();
   const [login, setAvailabilityLogin] = useState(false);
@@ -41,20 +41,15 @@ function SignupPage() {
         .required(t('required field')),
     }),
     onSubmit: async (values) => {
-      setDisabled(true);
-
       try {
-        const res = await axios.post('/api/v1/signup', values);
-        localStorage.setItem('userId', JSON.stringify(res.data));
-        context.logIn();
-        navigate('/');
+        const res = await axios.post(routes.signupPath(), values);
+        auth.logIn(res.data);
+        navigate(routes.mainPage());
       } catch (error) {
         if (error.isAxiosError && error.response.status === 409) {
-          setDisabled(false);
           setAvailabilityLogin(true);
         } else {
           toast.error(t('connection error'));
-          setDisabled(false);
           rollbar.error('Error fetching data from server, signuppage', error);
         }
       }
@@ -143,7 +138,7 @@ function SignupPage() {
                   ) : null}
                 </Form.Group>
 
-                <Button disabled={disabled} type="submit" variant="outline-primary" className="w-100 btn btn-outline-primary">{t('register')}</Button>
+                <Button type="submit" variant="outline-primary" className="w-100 btn btn-outline-primary">{t('register')}</Button>
               </Form>
             </div>
           </div>

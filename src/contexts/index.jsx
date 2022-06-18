@@ -1,5 +1,5 @@
 import { createContext } from 'react';
 
-const AppContext = createContext({});
+export const ConnectionContext = createContext(null);
 
-export default AppContext;
+export const AuthContext = createContext({});

@@ -1,21 +1,16 @@
-import React, { useState } from 'react';
-import { Button } from 'react-bootstrap';
+import React from 'react';
+import { Button, ButtonGroup } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions as channelsActions, selectors as channelsSelectors } from '../slices/channelsSlice.js';
 import { actions as modalsActions } from '../slices/modalsSlice.js';
-import Menu from './Menu.jsx';
 
 function Channels() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const channels = useSelector(channelsSelectors.selectAll);
-  const [idOpenedMenu, changeIdOpenedMenu] = useState(null);
   const currentChannelId = useSelector((state) => state.channels.currentChannelId);
-
-  const deleteMenu = () => {
-    changeIdOpenedMenu(null);
-  };
 
   const selectChannel = (channelId) => () => {
     dispatch(channelsActions.setCurrentChannelId(channelId));
@@ -23,13 +18,6 @@ function Channels() {
 
   const showModal = (type, id = null) => () => {
     dispatch(modalsActions.showModal({ type, id }));
-  };
-
-  const handleMenu = (id) => (e) => {
-    e.stopPropagation();
-    return idOpenedMenu === id
-      ? deleteMenu()
-      : changeIdOpenedMenu(id);
   };
 
   return (
@@ -47,25 +35,27 @@ function Channels() {
       <ul className="nav flex-column nav-pills nav-fill px-2">
         {channels && channels.map((channel) => (
           <li key={channel.id} className="nav-item w-100">
-            <div role="group" className="d-flex show dropdown btn-group">
-              <Button onClick={selectChannel(channel.id)} variant={channel.id === currentChannelId ? 'info' : 'light'} type="button" className="w-100 rounded-0 text-start text-truncate btn">
+            <Dropdown as={ButtonGroup} className="w-100 d-flex">
+              <Button onClick={selectChannel(channel.id)} variant={channel.id === currentChannelId ? 'secondary' : 'light'} className="w-100 text-start text-truncate">
                 <span className="me-1">#</span>
                 {channel.name}
               </Button>
               {channel.removable && (
-              <Button onClick={handleMenu(channel.id)} variant={channel.id === currentChannelId ? 'info' : 'light'} type="button" aria-expanded="true" className="flex-grow-0 dropdown-toggle dropdown-toggle-split btn btn-secondary" id="react-aria9811200575-3">
-                <span className="visually-hidden">Управление каналом</span>
-              </Button>
+              <>
+                <Dropdown.Toggle split variant={channel.id === currentChannelId ? 'secondary' : 'light'} id="dropdown-split-basic">
+                  <span className="visually-hidden">Управление каналом</span>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={showModal('removing', channel.id)} as="button">{t('delete')}</Dropdown.Item>
+                  <Dropdown.Item onClick={showModal('renaming', channel.id)} as="button">{t('rename')}</Dropdown.Item>
+                </Dropdown.Menu>
+              </>
               )}
-              {idOpenedMenu === channel.id
-              && <Menu id={channel.id} showModal={showModal} deleteMenu={deleteMenu} />}
-            </div>
+            </Dropdown>
           </li>
         ))}
-
       </ul>
     </div>
-
   );
 }
 
