@@ -3,9 +3,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRollbar } from '@rollbar/react';
 import { useFormik } from 'formik';
-import { Button, Form } from 'react-bootstrap';
+import {
+  Button, Form, Container, Row, Col, Card,
+} from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth.js';
 import img from '../images/login.png';
 import routes from '../routes.js';
@@ -46,14 +48,14 @@ function LoginPage() {
   });
 
   return (
-    <div className="container-fluid h-100">
-      <div className="row justify-content-center align-content-center h-100">
-        <div className="col-12 col-md-8 col-xxl-6">
-          <div className="card shadow-sm">
-            <div className="card-body row p-5">
-              <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
+    <Container fluid className="h-100">
+      <Row className="justify-content-center align-content-center h-100">
+        <Col xs={12} md={8} xxl={6}>
+          <Card className="shadow-sm">
+            <Card.Body className="row p-5">
+              <Col xs={12} md={6} className="d-flex align-items-center justify-content-center">
                 <img className="rounded-circle" alt="Войти" src={img} />
-              </div>
+              </Col>
               <Form onSubmit={formik.handleSubmit} className="col-12 col-md-6 mt-3 mt-mb-0" noValidate>
                 <h1 className="text-center mb-4">{t('logIn')}</h1>
                 <Form.Group className="form-floating mb-3">
@@ -93,18 +95,17 @@ function LoginPage() {
                 </Form.Group>
                 <Button type="submit" variant="outline-primary" className="w-100 btn btn-outline-primary">Войти</Button>
               </Form>
-
-            </div>
-            <div className="card-footer p-4">
+            </Card.Body>
+            <Card.Footer className="p-4">
               <div className="text-center">
                 <span>{t('do not have an account?')}</span>
-                <a href="/signup">{t('registration')}</a>
+                <Link to="/signup">{t('registration')}</Link>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Card.Footer>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 

@@ -1,6 +1,9 @@
 import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Container, Row,
+} from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
@@ -50,17 +53,17 @@ function MainPage({ filter }) {
   }, []);
 
   return auth.user && (
-  <div className="container h-100 my-4 overflow-hidden rounded shadow">
-    <div className="row h-100 bg-white flex-md-row">
+    <Container className="h-100 my-4 overflow-hidden rounded shadow">
+      <Row className="h-100 bg-white flex-md-row">
 
-      <Channels />
+        <Channels />
 
-      <Messages />
+        <Messages />
 
-      { modalType && <ComponentModal />}
+        { modalType && <ComponentModal />}
 
-    </div>
-  </div>
+      </Row>
+    </Container>
   );
 }
 

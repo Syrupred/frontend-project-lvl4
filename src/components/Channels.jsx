@@ -1,5 +1,7 @@
 import React from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import {
+  Button, ButtonGroup, Nav, Col,
+} from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,7 +23,7 @@ function Channels() {
   };
 
   return (
-    <div className="col-4 col-md-2 border-end pt-5 px-0 bg-light">
+    <Col xs={4} md={2} className="border-end pt-5 px-0 bg-light">
       <div className="d-flex justify-content-between mb-2 ps-4 pe-2">
         <span>{t('channels')}</span>
         <Button onClick={showModal('adding')} type="button" className="p-0 text-primary btn btn-group-vertical" variant="white">
@@ -32,9 +34,14 @@ function Channels() {
           <span className="visually-hidden">+</span>
         </Button>
       </div>
-      <ul className="nav flex-column nav-pills nav-fill px-2">
+      <Nav
+        as="ul"
+        fill="true"
+        className="px-2 flex-column"
+        variant="pills"
+      >
         {channels && channels.map((channel) => (
-          <li key={channel.id} className="nav-item w-100">
+          <Nav.Item as="li" className="w-100" key={channel.id}>
             <Dropdown as={ButtonGroup} className="w-100 d-flex">
               <Button onClick={selectChannel(channel.id)} variant={channel.id === currentChannelId ? 'secondary' : 'light'} className="w-100 text-start text-truncate">
                 <span className="me-1">#</span>
@@ -52,10 +59,10 @@ function Channels() {
               </>
               )}
             </Dropdown>
-          </li>
+          </Nav.Item>
         ))}
-      </ul>
-    </div>
+      </Nav>
+    </Col>
   );
 }
 

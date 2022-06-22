@@ -4,7 +4,9 @@ import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useRollbar } from '@rollbar/react';
 import { toast } from 'react-toastify';
-import { Button, Form } from 'react-bootstrap';
+import {
+  Button, Form, Container, Row, Col, Card,
+} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import useAuth from '../hooks/useAuth.js';
@@ -57,11 +59,11 @@ function SignupPage() {
   });
 
   return (
-    <div className="container-fluid h-100">
-      <div className="row justify-content-center align-content-center h-100">
-        <div className="col-12 col-md-8 col-xxl-6">
-          <div className="card shadow-sm">
-            <div className="card-body d-flex flex-column flex-md-row justify-content-around align-items-center p-5">
+    <Container fluid className="h-100">
+      <Row className="justify-content-center align-content-center h-100">
+        <Col xs={12} md={8} xxl={6}>
+          <Card className="shadow-sm">
+            <Card.Body className="d-flex flex-column flex-md-row justify-content-around align-items-center p-5">
               <div>
                 <img src={img} className="rounded-circle" alt="Регистрация" />
               </div>
@@ -80,12 +82,10 @@ function SignupPage() {
                     required
                     ref={inputRef}
                     isInvalid={login || (formik.touched.username && formik.errors.username)}
-
                   />
                   <Form.Label className="form-label" htmlFor="username">{t('username')}</Form.Label>
                   {formik.touched.username && formik.errors.username ? (
                     <Form.Control.Feedback tooltip type="invalid">{formik.errors.username}</Form.Control.Feedback>
-
                   ) : null}
                 </Form.Group>
                 <Form.Group className="form-floating mb-3">
@@ -100,7 +100,6 @@ function SignupPage() {
                     id="password"
                     isInvalid={login || (formik.touched.password && formik.errors.password)}
                     required
-
                   />
                   <Form.Label htmlFor="password">{t('password')}</Form.Label>
                   {formik.touched.password && formik.errors.password ? (
@@ -120,7 +119,6 @@ function SignupPage() {
                     isInvalid={login
                              || (formik.touched.confirmPassword && formik.errors.confirmPassword)}
                     required
-
                   />
                   <Form.Label htmlFor="confirmPassword">{t('confirmPassword')}</Form.Label>
 
@@ -130,21 +128,18 @@ function SignupPage() {
                     </Form.Control.Feedback>
                   ) : null}
                   { login ? (
-
                     <Form.Control.Feedback tooltip type="invalid">
                       {t('this user already exists')}
                     </Form.Control.Feedback>
-
                   ) : null}
                 </Form.Group>
-
                 <Button type="submit" variant="outline-primary" className="w-100 btn btn-outline-primary">{t('register')}</Button>
               </Form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
